@@ -1,17 +1,4 @@
 import {
-  Box,
-  Button,
-  ButtonGroup,
-  Flex,
-  HStack,
-  IconButton,
-  Input,
-  SkeletonText,
-  Text,
-} from "@chakra-ui/react";
-import { FaLocationArrow, FaTimes } from "react-icons/fa";
-
-import {
   useJsApiLoader,
   GoogleMap,
   Marker,
@@ -20,7 +7,20 @@ import {
 } from "@react-google-maps/api";
 import { useRef, useState } from "react";
 
-const center = { lat: 48.8584, lng: 2.2945 };
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Flex,
+  IconButton,
+  Input,
+  SkeletonText,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { FaLocationArrow, FaTimes } from "react-icons/fa";
+
+const center = { lat: 28.6297, lng: 77.3721 };
 
 function App() {
   // https://github.com/JustFly1984/react-google-maps-api/issues/238
@@ -29,9 +29,7 @@ function App() {
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [distance, setDistance] = useState("");
   const [duration, setDuration] = useState("");
-  /** @type React.MutableRefObject<HTMLInputElement> */
   const originRef = useRef();
-  /** @type React.MutableRefObject<HTMLInputElement> */
   const destinationRef = useRef();
 
   const { isLoaded, loadError } = useJsApiLoader({
@@ -50,13 +48,13 @@ function App() {
     if (originRef.current.value === "" || destinationRef.current.value === "") {
       return;
     }
-    // eslint-disable-next-line no-undef
+
     const directionsService = new window.google.maps.DirectionsService();
     const results = await directionsService.route({
       origin: originRef.current.value,
       destination: destinationRef.current.value,
-      // eslint-disable-next-line no-undef
-      travelMode: google.maps.TravelMode.DRIVING,
+
+      travelMode: window.google.maps.TravelMode.DRIVING,
     });
     setDirectionsResponse(results);
     setDistance(results.routes[0].legs[0].distance.text);
@@ -105,59 +103,63 @@ function App() {
         p={4}
         borderRadius="xl"
         m={4}
-        bgColor="white"
+        bgColor="#F5F5F5"
         shadow="outline"
         zIndex="1"
       >
-        <HStack spacing={1}>
+        <Text as={"b"} fontSize="2xl">
+          Distance Calculator
+        </Text>
+        <VStack align>
+          {/* Origin Box */}
           <Box p={1}>
+            <Text>Origin</Text>
             <Autocomplete>
-              <HStack spacing={2} mt={2}>
-                <Text>Origin</Text>
-                <Input
-                  type="text"
-                  placeholder="Example: Delhi"
-                  ref={originRef}
-                />
-              </HStack>
+              <Input
+                type="text"
+                placeholder="Example: Mumbai"
+                ref={originRef}
+              />
             </Autocomplete>
           </Box>
+          {/* Destination Box */}
           <Box p={1}>
+            <Text>Destination</Text>
             <Autocomplete>
-              <HStack spacing={2} mt={2}>
-                <Text>Destination</Text>
-                <Input
-                  type="text"
-                  placeholder="Example: Mumbai"
-                  ref={destinationRef}
-                />
-              </HStack>
+              <Input
+                type="text"
+                placeholder="Example: Bangalore"
+                ref={destinationRef}
+              />
             </Autocomplete>
           </Box>
-          <ButtonGroup variant="outline">
+          <ButtonGroup variant="solid" p={1} spacing={3}>
             <Button colorScheme="green" type="submit" onClick={calculateRoute}>
               Calculate Route
             </Button>
-            <IconButton
+            <Button
               aria-label="center back"
               icon={<FaTimes />}
               onClick={clearRoute}
+              border="1px solid #E2E8F0"
+            >
+              Reset
+            </Button>
+            <IconButton
+              aria-label="center back"
+              icon={<FaLocationArrow />}
+              isRound
+              onClick={() => {
+                map.setZoom(10);
+                map.panTo(center);
+              }}
             />
           </ButtonGroup>
-        </HStack>
-        <HStack spacing={4} mt={4} justifyContent="space-between">
-          <Text>Distance: {distance} </Text>
-          <Text>Duration: {duration} </Text>
-          <IconButton
-            aria-label="center back"
-            icon={<FaLocationArrow />}
-            isRound
-            onClick={() => {
-              map.setZoom(10);
-              map.panTo(center);
-            }}
-          />
-        </HStack>
+          <VStack spacing={4} mt={4} pl={2} align>
+            <Text>Distance: {distance} </Text>
+            <Text>Duration: {duration} </Text>
+          </VStack>
+        </VStack>
       </Box>
     </Flex>
   );
