@@ -83,6 +83,7 @@ const InfoCard = ({
           icon={<FaTimes />}
           onClick={clearRoute}
           border="1px solid #E2E8F0"
+          data-cy="resetBtn"
           textColor="black"
         >
           Reset
