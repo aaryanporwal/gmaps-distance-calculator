@@ -1,7 +1,6 @@
 import {
   useJsApiLoader,
   GoogleMap,
-  Marker,
   Autocomplete,
   DirectionsRenderer,
 } from "@react-google-maps/api";
@@ -22,13 +21,14 @@ import { FaLocationArrow, FaTimes } from "react-icons/fa";
 
 const center = { lat: 28.6297, lng: 77.3721 };
 
+const libraries = ["places"];
+
 function App() {
   // https://github.com/JustFly1984/react-google-maps-api/issues/238
-  const [libraries] = useState(["places"]);
   const [map, setMap] = useState(/** @type google.maps.Map */ (null));
   const [directionsResponse, setDirectionsResponse] = useState(null);
-  const [distance, setDistance] = useState("");
-  const [duration, setDuration] = useState("");
+  const [distance, setDistance] = useState("0.0 km");
+  const [duration, setDuration] = useState("0 mins");
   const originRef = useRef();
   const destinationRef = useRef();
 
@@ -63,8 +63,8 @@ function App() {
 
   function clearRoute() {
     setDirectionsResponse(null);
-    setDistance("");
-    setDuration("");
+    setDistance("0.0 km");
+    setDuration("0 mins");
     originRef.current.value = "";
     destinationRef.current.value = "";
   }
@@ -90,7 +90,7 @@ function App() {
           }}
           onLoad={(map) => setMap(map)}
         >
-          <Marker position={center} />
+          {/* <Marker position={center} /> */}
           {directionsResponse && (
             <DirectionsRenderer directions={directionsResponse} />
           )}
@@ -106,7 +106,7 @@ function App() {
         bgColor="#00142191"
         opacity={0.98}
         backdropFilter={"auto"}
-        backdropBlur={"40px"}
+        backdropBlur={"15px"}
         textColor="white"
         border={"1px solid grey"}
         zIndex="1"
@@ -165,8 +165,12 @@ function App() {
             />
           </ButtonGroup>
           <VStack spacing={4} mt={4} pl={2} align>
-            <Text>Distance: {distance} </Text>
-            <Text>Duration: {duration} </Text>
+            <Text>
+              <b>Distance:</b> {distance}{" "}
+            </Text>
+            <Text>
+              <b>Duration:</b> {duration}{" "}
+            </Text>
           </VStack>
         </VStack>
       </Box>
