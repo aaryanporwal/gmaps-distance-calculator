@@ -83,7 +83,6 @@ function App() {
           zoom={10}
           mapContainerStyle={{ width: "100%", height: "100%" }}
           options={{
-            mapId: "cfea29b2cc8a175f",
             zoomControl: false,
             streetViewControl: false,
             mapTypeControl: false,
@@ -97,14 +96,19 @@ function App() {
           )}
         </GoogleMap>
       </Box>
+      {/* Modal Box */}
       <Box
         position="absolute"
         left={0}
         p={4}
         borderRadius="xl"
         m={4}
-        bgColor="#F5F5F5"
-        shadow="outline"
+        bgColor="#00142191"
+        opacity={0.98}
+        backdropFilter={"auto"}
+        backdropBlur={"40px"}
+        textColor="white"
+        border={"1px solid grey"}
         zIndex="1"
       >
         <Text as={"b"} fontSize="2xl">
@@ -118,6 +122,7 @@ function App() {
               <Input
                 type="text"
                 placeholder="Example: Mumbai"
+                _placeholder={{ color: "whitesmoke" }}
                 ref={originRef}
               />
             </Autocomplete>
@@ -129,6 +134,7 @@ function App() {
               <Input
                 type="text"
                 placeholder="Example: Bangalore"
+                _placeholder={{ color: "whitesmoke" }}
                 ref={destinationRef}
               />
             </Autocomplete>
@@ -142,12 +148,15 @@ function App() {
               icon={<FaTimes />}
               onClick={clearRoute}
               border="1px solid #E2E8F0"
+              textColor="black"
             >
               Reset
             </Button>
             <IconButton
               aria-label="center back"
               icon={<FaLocationArrow />}
+              border="1px solid #E2E8F0"
+              textColor="black"
               isRound
               onClick={() => {
                 map.setZoom(10);
