@@ -1,30 +1,18 @@
+import InfoCard from "./components/InfoCard";
 import {
   useJsApiLoader,
   GoogleMap,
-  Autocomplete,
   DirectionsRenderer,
 } from "@react-google-maps/api";
-import { useRef, useState } from "react";
-
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Flex,
-  IconButton,
-  Input,
-  SkeletonText,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
-import { FaLocationArrow, FaTimes } from "react-icons/fa";
+import { useRef, useState, useCallback } from "react";
+import { Box, Flex, SkeletonText } from "@chakra-ui/react";
 
 const center = { lat: 28.6297, lng: 77.3721 };
 
+// https://github.com/JustFly1984/react-google-maps-api/issues/238
 const libraries = ["places"];
 
-function App() {
-  // https://github.com/JustFly1984/react-google-maps-api/issues/238
+const App = () => {
   const [map, setMap] = useState(/** @type google.maps.Map */ (null));
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [distance, setDistance] = useState("0.0 km");
@@ -37,6 +25,11 @@ function App() {
     libraries,
   });
 
+  const reCenter = useCallback(() => {
+    map.setZoom(10);
+    map.panTo(center);
+  }, [map]);
+
   if (!isLoaded) {
     return <SkeletonText />;
   }
@@ -44,30 +37,37 @@ function App() {
     return <div>Map cannot be loaded right now, sorry.</div>;
   }
 
-  async function calculateRoute() {
+  const calculateRoute = async () => {
     if (originRef.current.value === "" || destinationRef.current.value === "") {
       return;
     }
 
     const directionsService = new window.google.maps.DirectionsService();
-    const results = await directionsService.route({
-      origin: originRef.current.value,
-      destination: destinationRef.current.value,
+    try {
+      const results = await directionsService.route({
+        origin: originRef.current.value,
+        destination: destinationRef.current.value,
 
-      travelMode: window.google.maps.TravelMode.DRIVING,
-    });
-    setDirectionsResponse(results);
-    setDistance(results.routes[0].legs[0].distance.text);
-    setDuration(results.routes[0].legs[0].duration.text);
-  }
+        travelMode: window.google.maps.TravelMode.DRIVING,
+      });
+      setDirectionsResponse(results);
+      setDistance(results.routes[0].legs[0].distance.text);
+      setDuration(results.routes[0].legs[0].duration.text);
+    } catch (err) {
+      console.log(err);
+      setDistance("Can't find a route");
+      setDuration("Can't find a route");
+      setDirectionsResponse(null);
+    }
+  };
 
-  function clearRoute() {
+  const clearRoute = () => {
     setDirectionsResponse(null);
     setDistance("0.0 km");
     setDuration("0 mins");
     originRef.current.value = "";
     destinationRef.current.value = "";
-  }
+  };
 
   return (
     <Flex
@@ -97,85 +97,17 @@ function App() {
         </GoogleMap>
       </Box>
       {/* Modal Box */}
-      <Box
-        position="absolute"
-        left={0}
-        p={4}
-        borderRadius="xl"
-        m={4}
-        bgColor="#00142191"
-        opacity={0.98}
-        backdropFilter={"auto"}
-        backdropBlur={"15px"}
-        textColor="white"
-        border={"1px solid grey"}
-        zIndex="1"
-      >
-        <Text as={"b"} fontSize="2xl">
-          Distance Calculator
-        </Text>
-        <VStack align>
-          {/* Origin Box */}
-          <Box p={1}>
-            <Text>Origin</Text>
-            <Autocomplete>
-              <Input
-                type="text"
-                placeholder="Example: Mumbai"
-                _placeholder={{ color: "whitesmoke" }}
-                ref={originRef}
-              />
-            </Autocomplete>
-          </Box>
-          {/* Destination Box */}
-          <Box p={1}>
-            <Text>Destination</Text>
-            <Autocomplete>
-              <Input
-                type="text"
-                placeholder="Example: Bangalore"
-                _placeholder={{ color: "whitesmoke" }}
-                ref={destinationRef}
-              />
-            </Autocomplete>
-          </Box>
-          <ButtonGroup variant="solid" p={1} spacing={3}>
-            <Button colorScheme="green" type="submit" onClick={calculateRoute}>
-              Calculate Route
-            </Button>
-            <Button
-              aria-label="center back"
-              icon={<FaTimes />}
-              onClick={clearRoute}
-              border="1px solid #E2E8F0"
-              textColor="black"
-            >
-              Reset
-            </Button>
-            <IconButton
-              aria-label="center back"
-              icon={<FaLocationArrow />}
-              border="1px solid #E2E8F0"
-              textColor="black"
-              isRound
-              onClick={() => {
-                map.setZoom(10);
-                map.panTo(center);
-              }}
-            />
-          </ButtonGroup>
-          <VStack spacing={4} mt={4} pl={2} align>
-            <Text>
-              <b>Distance:</b> {distance}{" "}
-            </Text>
-            <Text>
-              <b>Duration:</b> {duration}{" "}
-            </Text>
-          </VStack>
-        </VStack>
-      </Box>
+      <InfoCard
+        originRef={originRef}
+        destinationRef={destinationRef}
+        calculateRoute={calculateRoute}
+        clearRoute={clearRoute}
+        distance={distance}
+        duration={duration}
+        reCenterCB={reCenter}
+      />
     </Flex>
   );
-}
+};
 
 export default App;
