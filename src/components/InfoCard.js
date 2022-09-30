@@ -49,6 +49,7 @@ const InfoCard = ({
             _placeholder={{
               color: "whitesmoke",
             }}
+            data-cy="originInput"
             ref={originRef}
           />
         </Autocomplete>
@@ -63,12 +64,18 @@ const InfoCard = ({
             _placeholder={{
               color: "whitesmoke",
             }}
+            data-cy="destinationInput"
             ref={destinationRef}
           />
         </Autocomplete>
       </Box>
       <ButtonGroup variant="solid" p={1} spacing={3}>
-        <Button colorScheme="green" type="submit" onClick={calculateRoute}>
+        <Button
+          colorScheme="green"
+          type="submit"
+          data-cy="calculateBtn"
+          onClick={calculateRoute}
+        >
           Calculate Route
         </Button>
         <Button
@@ -90,10 +97,10 @@ const InfoCard = ({
         />
       </ButtonGroup>
       <VStack spacing={4} mt={4} pl={2} align>
-        <Text>
+        <Text data-cy="distanceText">
           <b>Distance:</b> {distance}{" "}
         </Text>
-        <Text>
+        <Text data-cy="durationText">
           <b>Duration:</b> {duration}{" "}
         </Text>
       </VStack>
