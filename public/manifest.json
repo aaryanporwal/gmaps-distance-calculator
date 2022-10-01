@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Distance Calculator",
+  "name": "GMaps Distance and Duration Calculator",
   "icons": [
     {
       "src": "favicon.ico",
