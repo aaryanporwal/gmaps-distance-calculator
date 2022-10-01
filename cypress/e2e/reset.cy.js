@@ -1,5 +1,3 @@
-/// <reference types="Cypress"/>
-
 describe("Checks Reset Functionality", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000");
